@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+            <title>Stack It: Zen</title>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+                        <style>
+                                body {
+                                                margin: 0; padding: 0; overflow: hidden;
+                                                            background-color: #eceae4;
+                                                                        font-family: 'serif';
+                                                                                    touch-action: none; /* 스크롤 방지 */
+                                }
+                                        #adsense-placeholder {
+                                                        position: absolute; bottom: 0; width: 100%; height: 60px;
+                                                                    background: #dcd9d0; display: flex; align-items: center;
+                                                                                justify-content: center; font-size: 12px; color: #888;
+                                        }
+                                                .msg {
+                                                                position: absolute; top: 20%; width: 100%; text-align: center;
+                                                                            color: #555; letter-spacing: 1px; pointer-events: none;
+                                                }
+                                                    </style>
+                                                    </head>
+                                                    <body>
+                                                        <div class="msg">화면을 터치하여 돌을 쌓으세요</div>
+                                                            <div id="adsense-placeholder">광고 영역 (AdSense)</div>
+
+                                                                <script>
+                                                                        const { Engine, World, Bodies, Composite } = Matter;
+                                                                                let engine, world, ground;
+                                                                                        let stones = [];
+
+                                                                                                function setup() {
+                                                                                                                // 모바일 화면 꽉 차게 생성 (하단 광고 영역 제외)
+                                                                                                                            createCanvas(windowWidth, windowHeight - 60);
+                                                                                                                                        engine = Engine.create();
+                                                                                                                                                    world = engine.world;
+
+                                                                                                                                                                ground = Bodies.rectangle(width/2, height-5, width, 10, { isStatic: true });
+                                                                                                                                                                            Composite.add(world, ground);
+                                                                                                }
+
+                                                                                                        function draw() {
+                                                                                                                        background('#eceae4');
+                                                                                                                                    Engine.update(engine);
+
+                                                                                                                                                fill('#dcd9d0'); noStroke();
+                                                                                                                                                            rectMode(CENTER);
+                                                                                                                                                                        rect(ground.position.x, ground.position.y, width, 10);
+
+                                                                                                                                                                                    stones.forEach((s, index) => {
+                                                                                                                                                                                                        push();
+                                                                                                                                                                                                                        translate(s.body.position.x, s.body.position.y);
+                                                                                                                                                                                                                                        rotate(s.body.angle);
+                                                                                                                                                                                                                                                        fill(s.color);
+                                                                                                                                                                                                                                                                        stroke('#8a877f'); strokeWeight(1);
+                                                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                        // 돌 모양 렌더링
+                                                                                                                                                                                                                                                                                                                        beginShape();
+                                                                                                                                                                                                                                                                                                                                        for (let a = 0; a < TWO_PI; a += 0.7) {
+                                                                                                                                                                                                                                                                                                                                                                let r = s.w * 0.5;
+                                                                                                                                                                                                                                                                                                                                                                                    vertex(r * cos(a), r * sin(a));
+                                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                                                                                        endShape(CLOSE);
+                                                                                                                                                                                                                                                                                                                                                                        pop();
+
+                                                                                                                                                                                                                                                                                                                                                                                        if (s.body.position.y > height + 100) {
+                                                                                                                                                                                                                                                                                                                                                                                                                Composite.remove(world, s.body);
+                                                                                                                                                                                                                                                                                                                                                                                                                                    stones.splice(index, 1);
+                                                                                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                    });
+                                                                                                        }
+
+                                                                                                                // 모바일 터치 이벤트 대응
+                                                                                                                        function touchStarted() {
+                                                                                                                                        if (mouseY < height) {
+                                                                                                                                                            spawnStone(mouseX, mouseY);
+                                                                                                                                        }
+                                                                                                                                                    return false; // 브라우저 기본 동작 방지
+                                                                                                                        }
+
+                                                                                                                                function spawnStone(x, y) {
+                                                                                                                                                let size = random(30, 60);
+                                                                                                                                                            let body = Bodies.rectangle(x, y, size, size, {
+                                                                                                                                                                                friction: 0.5, restitution: 0.3,
+                                                                                                                                                                                                chamfer: { radius: size/3 }
+                                                                                                                                                            });
+                                                                                                                                                                        stones.push({ body, w: size, color: color(random(150, 200), 10) });
+                                                                                                                                                                                    Composite.add(world, body);
+                                                                                                                                }
+
+                                                                                                                                        function windowResized() {
+                                                                                                                                                        resizeCanvas(windowWidth, windowHeight - 60);
+                                                                                                                                        }
+                                                                                                                                            </script>
+                                                                                                                                            </body>
+                                                                                                                                            </html>
+                                                                                                                                            
+                                                                                                                                        }
+                                                                                                                                                            })
+                                                                                                                                }
+                                                                                                                                        }
+                                                                                                                        }
+                                                                                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                    })
+                                                                                                        }
+                                                                                                }
+                                                }
+                                        }
+                                }
